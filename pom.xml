@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.beeswax</groupId>
+    <artifactId>beeswaxrtb</artifactId>
+    <version>20151113</version>
+    <name>beeswaxrtb</name>
+
+
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <generated.sourceDirectory>target/generated-sources</generated.sourceDirectory>
+    </properties>
+  <dependencies>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>2.6.1</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    <plugin>
+       <artifactId>maven-antrun-plugin</artifactId>
+       <version>1.8</version>
+       <executions>
+         <execution>
+           <id>generate-sources</id>
+           <phase>generate-sources</phase>
+           <configuration>
+             <tasks>
+               <mkdir dir="${generated.sourceDirectory}"/>
+              <path id="proto.path">
+                  <fileset dir="beeswax">
+                      <include name="**/*.proto" />
+                  </fileset>
+              </path>
+               <pathconvert pathsep=" " property="proto.files" refid="proto.path" />
+               <exec executable="protoc" failonerror="true">
+                 <arg value="--java_out=${generated.sourceDirectory}"/>
+                 <arg value="-I${project.basedir}/"/>
+                 <arg line="${proto.files}"/>
+               </exec>
+             </tasks>
+             <sourceRoot>${generated.sourceDirectory}</sourceRoot>
+           </configuration>
+           <goals>
+             <goal>run</goal>
+           </goals>
+         </execution>
+       </executions>
+     </plugin>
+    </plugins>
+  </build>
+
+</project>
