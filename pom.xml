@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.beeswax</groupId>
     <artifactId>beeswaxrtb</artifactId>
-    <version>20151114</version>
+    <version>20151116</version>
     <name>beeswaxrtb</name>
     <packaging>jar</packaging>
     <properties>
@@ -27,36 +27,64 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-    <plugin>
-       <artifactId>maven-antrun-plugin</artifactId>
-       <version>1.8</version>
-       <executions>
-         <execution>
-           <id>generate-sources</id>
-           <phase>generate-sources</phase>
-           <configuration>
-             <tasks>
-               <mkdir dir="${generated.sourceDirectory}"/>
-              <path id="proto.path">
-                  <fileset dir="beeswax">
-                      <include name="**/*.proto" />
-                  </fileset>
-              </path>
-               <pathconvert pathsep=" " property="proto.files" refid="proto.path" />
-               <exec executable="protoc" failonerror="true">
-                 <arg value="--java_out=${generated.sourceDirectory}"/>
-                 <arg value="-I${project.basedir}/"/>
-                 <arg line="${proto.files}"/>
-               </exec>
-             </tasks>
-             <sourceRoot>${generated.sourceDirectory}</sourceRoot>
-           </configuration>
-           <goals>
-             <goal>run</goal>
-           </goals>
-         </execution>
-       </executions>
-     </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+           <!-- Run shade goal on package phase -->
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <createDependencyReducedPom>true</createDependencyReducedPom>
+              <relocations>
+                <relocation>
+                    <pattern>com.google.protobuf</pattern>
+                    <shadedPattern>com.beeswax.com.google.protobuf</shadedPattern>
+                </relocation>
+              </relocations>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                    <resource>.proto</resource>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+         <artifactId>maven-antrun-plugin</artifactId>
+         <version>1.8</version>
+         <executions>
+           <execution>
+             <id>generate-sources</id>
+             <phase>generate-sources</phase>
+             <configuration>
+               <tasks>
+                 <mkdir dir="${generated.sourceDirectory}"/>
+                <path id="proto.path">
+                    <fileset dir="beeswax">
+                        <include name="**/*.proto" />
+                    </fileset>
+                </path>
+                 <pathconvert pathsep=" " property="proto.files" refid="proto.path" />
+                 <exec executable="protoc" failonerror="true">
+                   <arg value="--java_out=${generated.sourceDirectory}"/>
+                   <arg value="-I${project.basedir}/"/>
+                   <arg line="${proto.files}"/>
+                 </exec>
+               </tasks>
+               <sourceRoot>${generated.sourceDirectory}</sourceRoot>
+             </configuration>
+             <goals>
+               <goal>run</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
     </plugins>
   </build>
 </project>
