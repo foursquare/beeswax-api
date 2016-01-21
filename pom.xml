@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.beeswax</groupId>
     <artifactId>beeswaxrtb</artifactId>
-    <version>20160107</version>
+    <version>20160121</version>
     <name>beeswaxrtb</name>
     <packaging>jar</packaging>
     <properties>
